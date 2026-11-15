@@ -199,6 +199,11 @@
   const CAT = '<div class="cat"></div>';
   const STORE_KEY = "meowmeow.chats.v1";
   const MODEL_KEY = "meowmeow.model.v1", FOLDER_KEY = "meowmeow.folders.v1", GUESS = ["model", "models", "Model", "Models", "checkpoints", "weights", "saved_models", "ckpt"];
+  // GitHub Pages / static hosting: list your models here (paths relative to this file, no leading "/").
+  // Each model = a manifest .json + a weights .bin. Add more entries to offer more models in the dropdown.
+  const STATIC_MODELS = [
+    { name: "meow", manifest: "meow/manifest.json", weights: "meow/weights.bin" }
+  ];
   let model = null, running = false, stopped = false, loadingModel = false, models = [], current = null;
   let state = { chats: [], activeId: null };
 
@@ -384,6 +389,7 @@
   async function discoverModels() {
     let found = [];
     try { const r = await fetch("__models"); if (r.ok) { const j = await r.json(); if (Array.isArray(j)) found = j; } } catch (e) {}   // serve.py
+    if (!found.length && STATIC_MODELS.length) found = STATIC_MODELS.map((m) => ({ ...m }));   // static hosting (GitHub Pages)
     if (!found.length) {                              // plain http.server: read directory listings
       const root = await listDir(""), dirs = new Set(root ? root.dirs : []);
       if (root) found.push(...pairsIn(root.files, "", "model"));
@@ -418,7 +424,7 @@
       $("status").textContent = "online";
       $("led").className = "led on";
     } catch (e) {
-      $("status").textContent = prev ? "couldn't load " + m.name : "model not found (run serve.py)";
+      $("status").textContent = prev ? "couldn't load " + m.name : "model not found (check meow/manifest.json + meow/weights.bin)";
       $("led").className = "led err";
     }
     loadingModel = false;
