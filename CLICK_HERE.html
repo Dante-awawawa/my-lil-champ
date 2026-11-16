@@ -203,7 +203,6 @@
   // Each model = a manifest .json + a weights .bin. Add more entries to offer more models in the dropdown.
   const STATIC_MODELS = [
     { name: "meow", manifest: "meow/manifest.json", weights: "meow/weights.bin" }
-    { name: "idk-yet", manifest: "idk-yet/manifest.json", weights: "idk-yet/weights.bin" }
   ];
   let model = null, running = false, stopped = false, loadingModel = false, models = [], current = null;
   let state = { chats: [], activeId: null };
